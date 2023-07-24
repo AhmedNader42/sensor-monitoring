@@ -1,6 +1,8 @@
 import random
-from collections import namedtuple
+import numpy as np
 import matplotlib.pyplot as plt
+from collections import namedtuple
+
 
 acc_band = namedtuple("AccBand", "min max acc_low acc_high")
 
@@ -8,42 +10,59 @@ acc_bands = [acc_band(0, 40, 3, 10), acc_band(41, 90, 7, 12), acc_band(91, 120, 
 print(acc_bands)
 
 
-def generator():
-    target = random.randint(0, 100)
-    s = 0
+# TODO!: Fix speed being negative
+def generator(current_speed) -> np.array:
+    change_range = 40
+    target: int = random.randint(
+        max(current_speed - change_range, 0), current_speed + change_range
+    )
     print("TARGET IS : " + str(target))
+    speed = current_speed
+    simulated_run = np.asarray([])
 
-    simulated_run = []
-    while s < target:
-        band_start = 0
-        band_end = 0
-        acc_low = 0
-        acc_high = 0
-        acc = 0
+    while speed <= target:
+        band_start, band_end, acc_low, acc_high, acceleration = 0, 0, 0, 0, 0
+
         for each in acc_bands:
             band_start, band_end, acc_low, acc_high = each
-            if s in range(band_start, band_end + 1):
-                acc = random.randint(acc_low, acc_high)
-        s += acc
-        simulated_run.append(s)
+            if current_speed in range(band_start, band_end + 1):
+                acceleration = random.randint(acc_low, acc_high)
 
-        # if random.random() < 0.1:
-        #     yield "!~@! Corrupted Record !~@!"
-        # else:
-        #     yield random.randint(68, 93) + random.random()
+        speed += acceleration
+
+        simulated_run = np.append(simulated_run, speed)
+
+    while speed >= target:
+        band_start, band_end, acc_low, acc_high, acceleration = 0, 0, 0, 0, 0
+
+        for each in acc_bands:
+            band_start, band_end, acc_low, acc_high = each
+            if current_speed in range(band_start, band_end + 1):
+                acceleration = random.randint(acc_low, acc_high)
+
+        speed -= acceleration
+
+        simulated_run = np.append(simulated_run, speed)
 
     yield simulated_run
 
-    # for _ in range(0, 100):
-    # print(next(generator()))
 
+simulated = np.array([])
 
-simulated = next(generator())
+for i in range(0, 10, 1):
+    current_speed = 0 if len(simulated) == 0 else simulated[-1]
+    print(current_speed)
+
+    generated_value = next(generator(current_speed))
+    simulated = np.append(simulated, generated_value)
+    # print(generated_value)
+    # print(simulated)
 print(simulated)
-plt.xticks(
-    list(range(0, len(simulated) + 1)), [str(i) for i in range(0, len(simulated) + 1)]
-)
+
+
+# plt.xticks(
+#     list(range(0, len(simulated) + 1)), [str(i) for i in range(0, len(simulated) + 1)]
+# )
 plt.plot(simulated)
-print(max(simulated))
 plt.grid()
 plt.show()
