@@ -3,10 +3,18 @@ import numpy as np
 import datetime
 import uuid
 import random
+from scipy.interpolate import make_interp_spline
+from scipy.interpolate import interp1d
+from numpy import interp
 import time
 from yielding import generator
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
 
 p = Producer({"bootstrap.servers": "localhost:9092"})
+
+fig, ax = plt.subplots()
 
 
 def delivery_report(err, msg):
@@ -21,7 +29,6 @@ def delivery_report(err, msg):
 def generate_record(current_speed):
     generated_record_id = uuid.uuid4()
     generated_value_1 = next(generator(current_speed=current_speed))
-    generated_value_2 = random.randint(-10, 110)
     generated_record_timestamp = datetime.datetime.now()
     top_speed = generated_value_1[-1]
     return (
@@ -29,28 +36,68 @@ def generate_record(current_speed):
         + ","
         + str(generated_value_1)
         + ","
-        + str(generated_value_2)
-        + ","
         + str(generated_record_timestamp),
         top_speed,
+        generated_value_1,
     )
 
 
+simulated = np.array([0, 0, 0, 0, 0])
 top_speed = 0
-for i in range(10):
+
+
+def produce_data():
+    global simulated
+    global top_speed
+
     # Trigger any available delivery report callbacks from previous produce() calls
     p.poll(0)
 
     # Asynchronously produce a message. The delivery report callback will
     # be triggered from the call to poll() above, or flush() below, when the
     # message has been successfully delivered or failed permanently.
-    message, top_speed = generate_record(top_speed)
-    print(message)
-    print(top_speed)
+    message, top_speed, generated_value_1 = generate_record(top_speed)
+
+    simulated = np.append(simulated, generated_value_1)
 
     p.produce("sensor_data", message.encode("utf-8"), callback=delivery_report)
-    time.sleep(3.0)
+
+
+x = np.arange(1, 6)
+(line,) = ax.plot(x, simulated)
+
+
+def animate(i):
+    produce_data()
+
+    if len(simulated) < 3:
+        return
+
+    x = np.arange(1, len(simulated) + 1)
+    X_Y_Spline = make_interp_spline(x, simulated)
+    print(x)
+    print(simulated)
+    # Returns evenly spaced numbers
+    # over a specified interval.
+    X_ = np.linspace(x.min(), x.max(), 100)
+    Y_ = X_Y_Spline(X_)
+    ax.clear()
+
+    # ax.set_xlim([0, 150])
+    # ax.set_ylim([0, 150])
+
+    ax.plot(X_, Y_)
+
+
+ani = animation.FuncAnimation(fig, animate, interval=2000, frames=1000)
+
+
+plt.show()
 
 # Wait for any outstanding messages to be delivered and delivery report
 # callbacks to be triggered.
 p.flush()
+
+print("EXECUTION FINISHED")
+# Save the final plot as a png
+# plt.savefig("plot.png")

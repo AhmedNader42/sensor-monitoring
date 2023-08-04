@@ -17,7 +17,7 @@ def generator(current_speed) -> np.array:
     )
     print("TARGET IS : " + str(target))
     speed = current_speed
-    simulated_run = np.asarray([])
+    simulated_run = np.array([])
 
     if speed <= target:
         while speed <= target:
@@ -46,22 +46,19 @@ def generator(current_speed) -> np.array:
     yield simulated_run
 
 
-simulated = np.array([])
+# simulated = np.array([])
 
-for i in range(0, 10, 1):
-    current_speed = 0 if len(simulated) == 0 else simulated[-1]
-    print(current_speed)
+# for i in range(0, 10, 1):
+#     current_speed = 0 if len(simulated) == 0 else simulated[-1]
+#     print(current_speed)
 
-    generated_value = next(generator(current_speed))
-    simulated = np.append(simulated, generated_value)
-    # print(generated_value)
-    # print(simulated)
-print(simulated)
+#     generated_value = next(generator(current_speed))
+#     simulated = np.append(simulated, generated_value)
+#     # print(generated_value)
+#     # print(simulated)
+# print(simulated)
 
 
-# plt.xticks(
-#     list(range(0, len(simulated) + 1)), [str(i) for i in range(0, len(simulated) + 1)]
-# )
-plt.plot(simulated)
-plt.grid()
-plt.show()
+# plt.plot(simulated)
+# plt.grid()
+# plt.show()
