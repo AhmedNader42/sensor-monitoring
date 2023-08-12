@@ -83,13 +83,10 @@ def animate(i):
     Y_ = X_Y_Spline(X_)
     ax.clear()
 
-    # ax.set_xlim([0, 150])
-    # ax.set_ylim([0, 150])
-
     ax.plot(X_, Y_)
 
 
-ani = animation.FuncAnimation(fig, animate, interval=2000, frames=1000)
+ani = animation.FuncAnimation(fig, animate, interval=2000, frames=10)
 
 
 plt.show()
