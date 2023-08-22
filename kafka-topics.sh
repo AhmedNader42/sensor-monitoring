@@ -1,17 +1,19 @@
+export KAFKA_HOME=/home/ahmed/Documents/kafka-3.4.0-src
+
 # Start Zookeeper
-./bin/zookeeper-server-start.sh config/zookeeper.properties
+${KAFKA_HOME}/bin/zookeeper-server-start.sh ${KAFKA_HOME}/config/zookeeper.properties
 
 # Start Kafka server
-./bin/kafka-server-start.sh config/server.properties 
+${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_HOME}/config/server.properties 
 
 # List topics on the server
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+${KAFKA_HOME}/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 
 # Create topic for data
-bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic !!TOPIC_NAME!!
+${KAFKA_HOME}/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic line_data
 
 # Start console consumer
-./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic !!TOPIC_NAME!!
+${KAFKA_HOME}//bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic line_data
 
 # Start console producer
-./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic !!TOPIC_NAME!!
+${KAFKA_HOME}//bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic line_data

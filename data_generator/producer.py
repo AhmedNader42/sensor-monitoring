@@ -2,11 +2,7 @@ from confluent_kafka import Producer
 import numpy as np
 import datetime
 import uuid
-import random
 from scipy.interpolate import make_interp_spline
-from scipy.interpolate import interp1d
-from numpy import interp
-import time
 from yielding import generator
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -15,11 +11,13 @@ import matplotlib.animation as animation
 p = Producer({"bootstrap.servers": "localhost:9092"})
 
 fig, ax = plt.subplots()
+IDENTIFIER = "LINE1"
 
 
 def delivery_report(err, msg):
     """Called once for each message produced to indicate delivery result.
     Triggered by poll() or flush()."""
+
     if err is not None:
         print("Message delivery failed: {}".format(err))
     else:
@@ -31,8 +29,11 @@ def generate_record(current_speed):
     generated_value_1 = next(generator(current_speed=current_speed))
     generated_record_timestamp = datetime.datetime.now()
     top_speed = generated_value_1[-1]
+
     return (
-        str(generated_record_id)
+        IDENTIFIER
+        + ","
+        + str(generated_record_id)
         + ","
         + str(generated_value_1)
         + ","
@@ -60,7 +61,12 @@ def produce_data():
 
     simulated = np.append(simulated, generated_value_1)
 
-    p.produce("sensor_data", message.encode("utf-8"), callback=delivery_report)
+    p.produce(
+        "line_data",
+        key=IDENTIFIER,
+        value=message.encode("utf-8"),
+        callback=delivery_report,
+    )
 
 
 x = np.arange(1, 6)
@@ -75,7 +81,7 @@ def animate(i):
 
     x = np.arange(1, len(simulated) + 1)
     X_Y_Spline = make_interp_spline(x, simulated)
-    print(x)
+    # print(x)
     print(simulated)
     # Returns evenly spaced numbers
     # over a specified interval.
@@ -86,7 +92,7 @@ def animate(i):
     ax.plot(X_, Y_)
 
 
-ani = animation.FuncAnimation(fig, animate, interval=2000, frames=10)
+ani = animation.FuncAnimation(fig, animate, interval=5000, frames=10)
 
 
 plt.show()
