@@ -25,7 +25,7 @@ def delivery_report(err, msg):
 
 
 def generate_record(current_speed):
-    generated_record_id = uuid.uuid4()
+    generated_event_id = uuid.uuid4()
     generated_value_1 = next(generator(current_speed=current_speed))
     generated_record_timestamp = datetime.datetime.now()
     top_speed = generated_value_1[-1]
@@ -33,7 +33,7 @@ def generate_record(current_speed):
     return (
         IDENTIFIER
         + ","
-        + str(generated_record_id)
+        + str(generated_event_id)
         + ","
         + str(generated_value_1)
         + ","

@@ -1,7 +1,7 @@
 from pyspark.streaming import StreamingContext
 from pyspark import SparkContext, Row
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, explode
+from pyspark.sql.functions import col, window, avg
 
 
 spark_context = SparkContext("local[2]", "data")
@@ -39,8 +39,11 @@ def handler(input_df, batch_id):
     # ).option("failOnDataLoss", "false").option("topic", "testingOutput").save()
 
 
+df_agg = df.groupBy(window(col("timestamp"), "10 seconds")).agg(avg(col("value")))
+
 query = (
-    df.writeStream.format("console")
+    df_agg.writeStream.outputMode("append")
+    .format("console")
     .foreachBatch(handler)
     .trigger(processingTime="10 seconds")
     .start()
