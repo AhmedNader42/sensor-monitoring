@@ -7,4 +7,6 @@ lazy val root = (project in file("."))
     name := "fleet-monitoring"
   )
 
-libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.5.0"
+libraryDependencies += "org.apache.spark" %% "spark-sql" % "3.2.0"
+libraryDependencies += "org.apache.spark" %% "spark-avro" % "3.5.0"
+libraryDependencies += "org.apache.avro" % "avro" % "1.9.2"

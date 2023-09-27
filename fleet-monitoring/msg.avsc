@@ -1,0 +1,14 @@
+{
+  "namespace": "example.avro",
+  "type": "record",
+  "name": "Msg",
+  "fields": [
+    { "name": "id", "type": "string" },
+    { "name": "event_id", "type": "string" },
+    {
+      "name": "data_values",
+      "type": { "type": "array", "items": "double" }
+    },
+    { "name": "event_timestamp", "type": ["string", "null"] }
+  ]
+}
