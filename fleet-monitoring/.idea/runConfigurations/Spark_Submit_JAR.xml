@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Spark-Submit-JAR" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="sbt package &amp;&amp; spark-submit --packages org.apache.spark:spark-avro_2.12:3.5.0,org.apache.avro:avro:1.9.2,org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 --class &quot;Main&quot; --master local target/scala-2.13/fleet-monitoring_2.13-0.1.0-SNAPSHOT.jar" />
+    <option name="SCRIPT_TEXT" value="sbt package &amp;&amp; spark-submit --packages org.apache.avro:avro:1.9.2,org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 --class &quot;Main&quot; --master local target/scala-2.13/fleet-monitoring_2.13-0.1.0-SNAPSHOT.jar" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />

@@ -7,17 +7,11 @@ from yielding import generator
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-import avro.schema
-import io
-from avro.io import DatumReader, DatumWriter, BinaryEncoder, BinaryDecoder
-
-
-schema = avro.schema.parse(open("msg.avsc", "rb").read())
 
 p = Producer({"bootstrap.servers": "localhost:9092"})
 
 fig, ax = plt.subplots()
-IDENTIFIER = "DEVICE1"
+IDENTIFIER = "LINE1"
 
 
 def delivery_report(err, msg):
@@ -33,29 +27,17 @@ def delivery_report(err, msg):
 def generate_record(current_speed):
     generated_event_id = uuid.uuid4()
     generated_value_1 = next(generator(current_speed=current_speed))
+    generated_record_timestamp = datetime.datetime.now()
     top_speed = generated_value_1[-1]
 
-    print(type(generated_value_1))
-    # WRITER
-    writer = DatumWriter(schema)
-
-    bytes_writer = io.BytesIO()
-
-    encoder = BinaryEncoder(bytes_writer)
-
-    writer.write(
-        {
-            "id": IDENTIFIER,
-            "event_id": str(generated_event_id),
-            "data_values": generated_value_1.tolist(),
-            "event_timestamp": str(datetime.datetime.now()),
-        },
-        encoder,
-    )
-    message_bytes = bytes_writer.getvalue()
-
     return (
-        message_bytes,
+        IDENTIFIER
+        + ","
+        + str(generated_event_id)
+        + ","
+        + str(generated_value_1.tolist())
+        + ","
+        + str(generated_record_timestamp),
         top_speed,
         generated_value_1,
     )
@@ -82,7 +64,7 @@ def produce_data():
     p.produce(
         "line_data",
         key=IDENTIFIER,
-        value=message,
+        value=message.encode("utf-8"),
         callback=delivery_report,
     )
 

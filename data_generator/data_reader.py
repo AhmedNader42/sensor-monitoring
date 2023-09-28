@@ -25,13 +25,15 @@ def handler(input_df, batch_id):
     print("BATCH ID: " + str(batch_id))
 
     # input_df.show(truncate=False)
-    input_array = input_df.select(col("value")).take(1)
+    print("VALUE AS STRING")
+    input_array = input_df.selectExpr("CAST(value as string)")
 
+    input_array.show(truncate=False)
     print("INPUT ARRAY")
-    print(input_array)
-    for each in input_array:
-        print(each)
-        print(each.value)
+    # print(input_array)
+    # for each in input_array:
+    #     print(each)
+    #     print(each.value)
 
     # exploded_input.show(truncate=False)
     # inputs_after_split.write.format("kafka").option(
@@ -39,10 +41,8 @@ def handler(input_df, batch_id):
     # ).option("failOnDataLoss", "false").option("topic", "testingOutput").save()
 
 
-df_agg = df.groupBy(window(col("timestamp"), "10 seconds")).agg(avg(col("value")))
-
 query = (
-    df_agg.writeStream.outputMode("append")
+    df.writeStream.outputMode("append")
     .format("console")
     .foreachBatch(handler)
     .trigger(processingTime="10 seconds")
